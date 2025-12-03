@@ -2,6 +2,11 @@
 	<!-- TO EDIT THE NAME OF THE NDLL EDIT THIS -->
 	<set name="NDLL_NAME" value="processinfo"/>
 
+	<set name="HXCPP_ARM64" value="1" if="arm64" />
+	<set name="HXCPP_ARMV7" value="1" if="armv7" />
+	<set name="HXCPP_X86" value="1" if="x86" />
+	<set name="HXCPP_X86_64" value="1" if="x86_64" />
+
 	<include name="${HXCPP}/build-tool/BuildCommon.xml"/>
 
 	<files id="common">
@@ -13,7 +18,7 @@
 
 	<set name="SLIBEXT" value=".lib" if="windows"/>
 	<set name="SLIBEXT" value=".a" unless="windows"/>
-	<!-- Added android to SLIBEXT -->
+	<!-- Android 静态库通常也是 .a，但在某些 hxcpp 配置中可能不同，保持你原本的设置以防万一 -->
 	<set name="SLIBEXT" value=".so" if="webos || android"/>
 
 	<set name="DEBUGEXTRA" value="-debug" if="fulldebug" />
@@ -39,4 +44,3 @@
 		<target id="NDLL"/>
 	</target>
 </xml>
-
