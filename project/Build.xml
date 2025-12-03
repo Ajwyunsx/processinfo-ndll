@@ -8,13 +8,13 @@
 		<compilerflag value="-Iinclude"/>
 
 		<file name="common/ExternalInterface.cpp"/>
-				<file name="common/hxprocessinfo.cpp"/>
-
+		<file name="common/hxprocessinfo.cpp"/>
 	</files>
 
 	<set name="SLIBEXT" value=".lib" if="windows"/>
 	<set name="SLIBEXT" value=".a" unless="windows"/>
-	<set name="SLIBEXT" value=".so" if="webos"/>
+	<!-- Added android to SLIBEXT -->
+	<set name="SLIBEXT" value=".so" if="webos || android"/>
 
 	<set name="DEBUGEXTRA" value="-debug" if="fulldebug" />
 
@@ -22,11 +22,21 @@
 	<!-- suffix = ${MSVC_LIB_VERSION}${DEBUGEXTRA}${LIBEXTRA} -->
 	<target id="NDLL" output="${NDLL_NAME}" tool="linker" toolid="${STD_MODULE_LINK}">
 		<outdir name="../ndll/${BINDIR}"/>
+		
+		<!-- Desktop extensions -->
 		<ext value=".ndll" if="windows || mac || linux"/>
+		
+		<!-- Android extension -->
+		<ext value=".so" if="android"/>
+
 		<files id="common"/>
+		
+		<!-- Android logging library (required for __android_log_print) -->
+		<lib name="-llog" if="android"/>
 	</target>
 
 	<target id="default">
 		<target id="NDLL"/>
 	</target>
 </xml>
+
