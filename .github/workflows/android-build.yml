@@ -14,7 +14,9 @@ jobs:
       contents: read
     
     strategy:
+      fail-fast: false
       matrix:
+        # 使用 hxcpp 识别的标准简写
         android-arch: [armv7, arm64, x86, x86_64]
     
     steps:
@@ -26,8 +28,19 @@ jobs:
         with:
           haxe-version: 4.3.4
 
+      # 缓存 Haxelib 可以显著加快后续构建速度
+      - name: Cache Haxelib
+        uses: actions/cache@v3
+        with:
+          path: .haxelib
+          key: ${{ runner.os }}-haxelib-${{ hashFiles('**/haxelib.json') }}
+          restore-keys: |
+            ${{ runner.os }}-haxelib-
+
       - name: Install hxcpp
         run: |
+          mkdir -p .haxelib
+          haxelib setup .haxelib
           haxelib install hxcpp
           haxelib list
 
@@ -35,6 +48,8 @@ jobs:
         uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
+          # r21e 是 Haxe 社区最稳定的版本，r25c 可能需要最新的 hxcpp git 版本
+          # 如果编译失败，尝试改回 r21e
           ndk-version: r25c
           add-to-path: true
 
@@ -45,14 +60,23 @@ jobs:
 
       - name: Build for Android ${{ matrix.android-arch }}
         working-directory: project
+        # 关键修改：
+        # 1. 移除了 -DHXCPP_ 前缀
+        # 2. 直接使用 -D${{ matrix.android-arch }} (例如 -Darm64)
         run: |
-          haxelib run hxcpp Build.xml -Dandroid -DHXCPP_${{ matrix.android-arch }}
+          haxelib run hxcpp Build.xml -Dandroid -D${{ matrix.android-arch }}
+
+      - name: List Output Files (Debug)
+        if: always()
+        run: find ndll -name "*.so"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
+          # 为每个架构创建单独的 artifact，避免覆盖或混淆
           name: processinfo-android-${{ matrix.android-arch }}
           path: |
             ndll/**/*.so
             ndll/**/*.a
           if-no-files-found: warn
+
