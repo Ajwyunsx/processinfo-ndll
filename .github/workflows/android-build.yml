@@ -48,9 +48,7 @@ jobs:
         uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
-          # r21e 是 Haxe 社区最稳定的版本，r25c 可能需要最新的 hxcpp git 版本
-          # 如果编译失败，尝试改回 r21e
-          ndk-version: r25c
+          ndk-version: r21e
           add-to-path: true
 
       - name: Configure environment
