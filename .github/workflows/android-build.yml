@@ -28,7 +28,7 @@ jobs:
 
       - name: Install hxcpp
         run: |
-          haxelib install hxcpp 4.3.4
+          haxelib install hxcpp
           haxelib list
 
       - name: Setup Android NDK
