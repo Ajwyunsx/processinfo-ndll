@@ -10,6 +10,8 @@ on:
 jobs:
   build-android:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     strategy:
       matrix:
@@ -26,7 +28,7 @@ jobs:
 
       - name: Install hxcpp
         run: |
-          haxelib install hxcpp
+          haxelib install hxcpp 4.3.4
           haxelib list
 
       - name: Setup Android NDK
